@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -29,8 +31,14 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+
+  bool submitIsVisible = true;
+
   @override
   Widget build(BuildContext context) {
+
     return Form(
       key: _formKey,
       child: Container(
@@ -39,44 +47,41 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 18.0, bottom: 2.0),
-                  child: Container(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "E ai, Bom Dia !",
-                        style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black.withOpacity(0.8)),
-                      ),
+                SizedBox(height: 10),
+                Container(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "E ai, Bom Dia !",
+                      style: TextStyle(
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.black.withOpacity(0.8)),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 16.0),
-                  child: Container(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Me conta seu primeiro nome \n\n"
-                            "pra eu saber quem é você.",
-                        style: TextStyle(
-                            fontSize: 18,
-                            height: 0.5,
-                            fontStyle: FontStyle.italic),
-                      ),
+                SizedBox(height: 16),
+                Container(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Me conta seu primeiro nome \n\n"
+                          "pra eu saber quem é você.",
+                      style: TextStyle(
+                          fontSize: 18,
+                          height: 0.5,
+                          fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),
+                SizedBox(height: 12),
                 TextFormField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(color: Colors.blue)),
-                    hintText: 'First name',
+                    hintText: 'Primeiro nome',
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -84,28 +89,28 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     }
                     return null;
                   },
+                  controller: firstNameController,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                  child: Container(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Agora me fala o seu sobrenome",
-                        style: TextStyle(
-                            fontSize: 18,
-                            height: 0.5,
-                            fontStyle: FontStyle.italic),
-                      ),
+                SizedBox(height: 16),
+                Container(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Agora me fala o seu sobrenome",
+                      style: TextStyle(
+                          fontSize: 18,
+                          height: 0.5,
+                          fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),
+                SizedBox(height: 16),
                 TextFormField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(color: Colors.blue)),
-                    hintText: 'Last name',
+                    hintText: 'Sobrenome',
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -113,20 +118,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     }
                     return null;
                   },
+                  controller: lastNameController,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Validate will return true if the form is valid, or false if
-                      // the form is invalid.
-                      if (_formKey.currentState!.validate()) {
-                        // Process data.
-                      }
-                    },
-                    child: const Text('Submit'),
-                  ),
+                SizedBox(height: 16),
+                Visibility(
+                    visible: submitIsVisible,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Validate will return true if the form is valid, or false if
+                        // the form is invalid.
+                        if (_formKey.currentState!.validate()) {
+
+                          setState(() {
+                            submitIsVisible = false;
+                          });
+
+                          String completeName = firstNameController.text.trim() + ' ' + lastNameController.text.trim();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Olá " + completeName)),
+                          );
+
+                        }
+                      },
+                      child: const Text('Submit'),
+                    ),
                 ),
+                SizedBox(height: 16),
               ],
             )),
       ),
