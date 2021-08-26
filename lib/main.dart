@@ -1,135 +1,135 @@
-// @dart=2.9
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:intent/flag.dart';
-import 'package:intent/intent.dart' as android_intent;
-import 'package:intent/action.dart' as android_action;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+void main() => runApp(const MyApp());
 
-  runApp(MyApp());
-}
-
+/// This is the main application widget.
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final statuses = [
-      Permission.storage,
-    ].request();
-    SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
-      title: "Meu primeiro app Flutter",
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  final PageController _controller = PageController(
-    initialPage: 0
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final pages = PageView(
-      controller:  _controller,
-      children: [
-        HomeWidget(),
-        PhotosWidget(),
-      ],
-    );
-  return pages;
-  }
-}
-
-class HomeWidget extends StatelessWidget {
-  
-  Widget build(BuildContext context) {
-    final children = new Scaffold(
-      body: new Image.asset(
-        "images/home1.jpg",
-        fit: BoxFit.cover,
-        height: double.infinity,
-        width: double.infinity,
+      home: Scaffold(
+        appBar: AppBar(),
+        body: const MyStatefulWidget(),
       ),
     );
-    return new GestureDetector(
-      onTapDown: _onTapDown,
-      child: children,
-    );
   }
-
-  _onTapDown(TapDownDetails details) {
-
-    var x = details.globalPosition.dx;
-    var y = details.globalPosition.dy;
-
-    print(details.localPosition);
-
-    int dx = (x / 80).floor();
-    int dy = ((y - 180) / 100).floor();
-    int posicao = dy * 5 + dx;
-    print("results: x=$x y=$y $dx $dy $posicao");
-    _save(posicao);
-  }
-
-  _save(int posicao) async {
-    var appDocDir = await getTemporaryDirectory();
-    String savePath = appDocDir.path + "/efeito-$posicao.jpg";
-    print(savePath);
-    await Dio().download(
-      "https://github.com/guilhermesilveira/flutter-magic/raw/main/efeito-1.jpg"
-      , savePath);
-    print("Saved !");
-    final result = await ImageGallerySaver.saveFile(savePath);
-    print(result);
-  }
-
 }
 
-class PhotosWidget extends StatelessWidget {
+/// This is the stateful widget that the main application instantiates.
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({Key? key}) : super(key: key);
 
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+/// This is the private State class that goes with MyStatefulWidget.
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
   Widget build(BuildContext context) {
-    final children = new Scaffold(
-      body: new Image.asset(
-        "images/home2.jpg",
-        fit: BoxFit.cover,
-        height: double.infinity,
-        width: double.infinity,
+    return Form(
+      key: _formKey,
+      child: Container(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 18.0, bottom: 2.0),
+                  child: Container(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "E ai, Bom Dia !",
+                        style: TextStyle(
+                            fontSize: 42,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.black.withOpacity(0.8)),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 16.0),
+                  child: Container(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Me conta seu primeiro nome \n\n"
+                            "pra eu saber quem é você.",
+                        style: TextStyle(
+                            fontSize: 18,
+                            height: 0.5,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  ),
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        borderSide: BorderSide(color: Colors.blue)),
+                    hintText: 'First name',
+                  ),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                  child: Container(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Agora me fala o seu sobrenome",
+                        style: TextStyle(
+                            fontSize: 18,
+                            height: 0.5,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  ),
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        borderSide: BorderSide(color: Colors.blue)),
+                    hintText: 'Last name',
+                  ),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Validate will return true if the form is valid, or false if
+                      // the form is invalid.
+                      if (_formKey.currentState!.validate()) {
+                        // Process data.
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ),
+              ],
+            )),
       ),
     );
-    return new GestureDetector(
-      onTap: _openGallery,
-      child: children,
-    );
   }
-
-  void _openGallery() {
-    print("Opening");
-    android_intent.Intent()
-      ..setAction(android_action.Action.ACTION_VIEW)
-      ..setType("image/*")
-      ..addFlag(Flag.FLAG_ACTIVITY_NEW_TASK)
-      ..startActivity().catchError((e) => print(e));
-  }
-
 }
